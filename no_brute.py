@@ -1,4 +1,4 @@
-from itertools import product, islice, cycle
+from itertools import product, islice, cycle, groupby
 from collections import defaultdict, deque
 
 ncolors = 2
@@ -22,6 +22,17 @@ def get_color_state(arr, i, cycled=False):
             color_state[arr[i + conn]] += 1
             color_state[arr[i - conn]] += 1
     return color_state
+
+
+def get_period(arr):
+    larr = len(arr)
+    for i in range(2, larr + 1):
+        if larr % i == 0:
+            for j in range(0, larr // i - 1):
+                if arr[j*i+i:j*i+2*i] != arr[0:i]:
+                    break
+            else:
+                return arr[0:i]
 
 
 def shift(l, n):
@@ -82,7 +93,7 @@ def get_state_set():
                 if current[:ncurrent // 2] == current[ncurrent // 2:]:
                     if perfect_check(current):
                         to_add = current[:ncurrent // 2]
-                        to_add_n = tuple(normalize_lex(normalize_color(to_add)))
+                        to_add_n = tuple(get_period(normalize_lex(normalize_color(to_add))))
                         if to_add_n == (0, 0, 0, 0, 1, 1):
                             print('to_add', to_add)
                             print('cur', current)
@@ -112,16 +123,21 @@ def print_bc_table(bc_table):
 
 
 if __name__ == "__main__":
+    print('ncolors={}'.format(ncolors))
+    print('connections={}'.format(connections))
+    print('start_config={}'.format(start_config))
     state_list = list(get_state_set())
     state_list.sort(key=lambda s: (len(s), s))
     bc_table = defaultdict(int)
-    for state in state_list:
-        table = []
-        for color in colors:
-            table.append(get_color_state(state, state.index(color), cycled=True))
-        b, c = table[0][1], table[1][0]
-        bc_table[(b,c)] += 1
-        print("({}, {})".format(b, c), state)
-
+    for key, group in groupby(state_list, key=len):
+        print('p={}'.format(key))
+        for state in group:
+            table = []
+            for color in colors:
+                table.append(get_color_state(state, state.index(color), cycled=True))
+            b, c = table[0][1], table[1][0]
+            bc_table[(b,c)] += 1
+            print("({}, {})".format(b, c), state)
+    print('B/C Table')
     print_bc_table(bc_table)
    
