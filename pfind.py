@@ -110,14 +110,15 @@ def get_state_set(start_config):
 
 
 def print_bc_table(bc_table):
-    lj = 3
+    max_i = len(connections) * 2
+    lj = max([len(str(x)) for x in bc_table.values()]) + 1
     print('*'.ljust(lj), end='')
-    for i in range(1, 7):
+    for i in range(1, max_i + 1):
         print('{}'.format(i).ljust(lj), end='')
     print()
-    for i in range(1, 7):
+    for i in range(1, max_i + 1):
         print('{}'.format(i).ljust(lj), end='')
-        for j in range(1, 7):
+        for j in range(1, max_i + 1):
             if bc_table.get((j, i)):
                 print('{}'.format(bc_table.get((j, i))).ljust(lj), end='')
             else:
@@ -188,6 +189,6 @@ if __name__ == "__main__":
                 print_table(table)
 
     if ncolors == 2:
-        print('B/C Table')
+        print('B/C Table ({0}x{0})'.format(2*len(connections)))
         print_bc_table(bc_table)
     print('total={}'.format(len(state_list)))
