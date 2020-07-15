@@ -154,6 +154,7 @@ if __name__ == "__main__":
 
     print('ncolors={}'.format(ncolors))
     print('connections={}'.format(connections))
+    print('itercount={} (~{:.2f} seconds)'.format(ncolors**(2*p), ncolors**(2*p) / 7375))
     start_configs = None
     if ncolors == 2:
         start_configs = [[0, 1]]
