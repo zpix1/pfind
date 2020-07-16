@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from itertools import product, islice, cycle, groupby, permutations
-from collections import defaultdict, deque, Counter
 import argparse
+from collections import defaultdict, deque, Counter
+from itertools import product, islice, cycle, groupby, permutations
 
 ncolors = None
 connections = None
@@ -16,6 +16,7 @@ def print_log(*args, **kwargs):
     if filename:
         with open(filename, 'a') as file:
             print(*args, **kwargs, file=file)
+
 
 def get_color_state(arr, i, cycled=False):
     color_state = list([0 for _ in colors])
@@ -173,7 +174,7 @@ if __name__ == "__main__":
     if ncolors == 2:
         start_configs = [[0, 1]]
     elif ncolors == 3:
-        start_configs = [[0] + [1] * n + [2] for n in range(1, 11)]
+        start_configs = [[0] + [1] * n + [2] for n in range(1, 2*p+1 + 1)]
     else:
         print_log('invalid number of colors: {}'.format(ncolors))
         exit(1)
