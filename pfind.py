@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 from collections import defaultdict, deque, Counter
+from datetime import timedelta
 from itertools import product, islice, cycle, groupby, permutations
 
 ncolors = None
@@ -169,7 +170,7 @@ if __name__ == "__main__":
 
     print_log('ncolors={}'.format(ncolors))
     print_log('connections={}'.format(connections))
-    print_log('itercount={} (~{:.2f} seconds)'.format(ncolors**(2*p), ncolors**(2*p) / 7375))
+    print_log('itercount={} (~{:0>8})'.format(ncolors**(2*p), str(timedelta(seconds=int(ncolors**(2*p) / 7375))) ))
     start_configs = None
     if ncolors == 2:
         start_configs = [[0, 1]]
