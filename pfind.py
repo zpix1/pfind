@@ -9,6 +9,13 @@ connections = None
 p = None
 colors = None
 
+filename = None
+
+def print_log(*args, **kwargs):
+    print(*args, **kwargs)
+    if filename:
+        with open(filename, 'a') as file:
+            print(*args, **kwargs, file=file)
 
 def get_color_state(arr, i, cycled=False):
     color_state = list([0 for _ in colors])
@@ -105,38 +112,38 @@ def get_state_set(start_config):
                     c += 1
                     todo.append(current + [new_color])
             if c > 1:
-                print('!!! BUG, AMBIGUOUS COLOR SELECTION')
+                print_log('!!! BUG, AMBIGUOUS COLOR SELECTION')
     return ans
 
 
 def print_bc_table(bc_table):
     max_i = len(connections) * 2
     lj = max([len(str(x)) for x in bc_table.values()]) + 1
-    print('*'.ljust(lj), end='')
+    print_log('*'.ljust(lj), end='')
     for i in range(1, max_i + 1):
-        print('{}'.format(i).ljust(lj), end='')
-    print()
+        print_log('{}'.format(i).ljust(lj), end='')
+    print_log()
     for i in range(1, max_i + 1):
-        print('{}'.format(i).ljust(lj), end='')
+        print_log('{}'.format(i).ljust(lj), end='')
         for j in range(1, max_i + 1):
             if bc_table.get((j, i)):
-                print('{}'.format(bc_table.get((j, i))).ljust(lj), end='')
+                print_log('{}'.format(bc_table.get((j, i))).ljust(lj), end='')
             else:
-                print('-'.ljust(lj), end='')
-        print('')
+                print_log('-'.ljust(lj), end='')
+        print_log('')
 
 
 def print_table(table):
     lj = 3
-    print('*'.ljust(lj), end='')
+    print_log('*'.ljust(lj), end='')
     for i in range(len(table[0])):
-        print('{}'.format(i).ljust(lj), end='')
-    print()
+        print_log('{}'.format(i).ljust(lj), end='')
+    print_log()
     for i in range(len(table)):
-        print('{}'.format(i).ljust(lj), end='')
+        print_log('{}'.format(i).ljust(lj), end='')
         for j in range(len(table[i])):
-            print('{}'.format(table[i][j]).ljust(lj), end='')
-        print()
+            print_log('{}'.format(table[i][j]).ljust(lj), end='')
+        print_log()
 
 
 if __name__ == "__main__":
@@ -145,23 +152,30 @@ if __name__ == "__main__":
                         default=2, help='number of colors')
     parser.add_argument('-c', '--connections', nargs='+',
                         default=[1, 2, 4], type=int, help='array of connections')
+    parser.add_argument('-o', '--output-file', action='store_true', default=False, help='save to file')
+    
     args = parser.parse_args()
+
 
     ncolors = args.ncolors
     connections = args.connections
     p = max(connections)
     colors = list(range(ncolors))
 
-    print('ncolors={}'.format(ncolors))
-    print('connections={}'.format(connections))
-    print('itercount={} (~{:.2f} seconds)'.format(ncolors**(2*p), ncolors**(2*p) / 7375))
+    if args.output_file:
+        filename = 'perf_{}_{}.txt'.format('-'.join(map(str, connections)), ncolors)
+        print('output is also saved to {}'.format(filename))
+
+    print_log('ncolors={}'.format(ncolors))
+    print_log('connections={}'.format(connections))
+    print_log('itercount={} (~{:.2f} seconds)'.format(ncolors**(2*p), ncolors**(2*p) / 7375))
     start_configs = None
     if ncolors == 2:
         start_configs = [[0, 1]]
     elif ncolors == 3:
         start_configs = [[0] + [1] * n + [2] for n in range(1, 11)]
     else:
-        print('invalid number of colors: {}'.format(ncolors))
+        print_log('invalid number of colors: {}'.format(ncolors))
         exit(1)
 
     state_set = set()
@@ -173,23 +187,23 @@ if __name__ == "__main__":
     state_list.sort(key=lambda s: (len(s), s))
     bc_table = defaultdict(int)
     for key, group in groupby(state_list, key=len):
-        print('p={}'.format(key))
+        print_log('p={}'.format(key))
         for state in group:
             if not perfect_check(state):
-                print('!!! CRITICAL BUG, COLORING IS NOT PERFECT !!!')
+                print_log('!!! CRITICAL BUG, COLORING IS NOT PERFECT !!!')
             table = []
             for color in colors:
                 table.append(get_color_state(
                     state, state.index(color), cycled=True))
             if ncolors == 2:
                 b, c = table[0][1], table[1][0]
-                print("({}, {})".format(b, c), state)
+                print_log("({}, {})".format(b, c), state)
                 bc_table[(b, c)] += 1
             else:
-                print(state)
+                print_log(state)
                 print_table(table)
 
     if ncolors == 2:
-        print('B/C Table ({0}x{0})'.format(2*len(connections)))
+        print_log('B/C Table ({0}x{0})'.format(2*len(connections)))
         print_bc_table(bc_table)
-    print('total={}'.format(len(state_list)))
+    print_log('total={}'.format(len(state_list)))
