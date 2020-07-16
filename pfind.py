@@ -170,8 +170,15 @@ if __name__ == "__main__":
 
     print_log('ncolors={}'.format(ncolors))
     print_log('connections={}'.format(connections))
-    print_log('itercount={} (~{:0>8})'.format(ncolors**(2*p), str(timedelta(seconds=int(ncolors**(2*p) / 7375))) ))
+    itercount = ncolors**(2*p)
+
+    if ncolors == 3:
+        itercount = ncolors**(2*p) * (2*p+2)
+
+    print_log('itercount={} (~{:0>8})'.format(itercount, str(timedelta(seconds=itercount / 7000))))
+    
     start_configs = None
+    
     if ncolors == 2:
         start_configs = [[0, 1]]
     elif ncolors == 3:
