@@ -120,7 +120,7 @@ def get_state_set(start_config):
 
 def print_bc_table(bc_table):
     max_i = len(connections) * 2
-    lj = max([len(str(x)) for x in bc_table.values()]) + 1
+    lj = max([len(str(x)) for x in list(bc_table.values()) + list(range(1, max_i + 1))]) + 1
     print_log('*'.ljust(lj), end='')
     for i in range(1, max_i + 1):
         print_log('{}'.format(i).ljust(lj), end='')
